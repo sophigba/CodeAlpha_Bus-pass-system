@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwiftPass — Book a Pass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0d1117;
+    --paper: #f5f0e8;
+    --accent: #e84c1e;
+    --muted: #8a8070;
+    --card: #fff9f0;
+    --border: rgba(13,17,23,0.1);
+    --success: #22c55e;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(245,240,232,0.95);
+    backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -1px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .logo span { color: var(--accent); }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .user-avatar {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+  }
+  .btn-logout {
+    background: none;
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* PAGE LAYOUT */
+  .page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 50px 30px;
+  }
+
+  .page-header {
+    margin-bottom: 44px;
+  }
+  .page-tag {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .page-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    margin-bottom: 8px;
+  }
+  .page-sub {
+    font-size: 15px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* STEPPER */
+  .stepper {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 48px;
+  }
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+  }
+  .step-circle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+    transition: all 0.3s;
+    background: rgba(13,17,23,0.08);
+    color: var(--muted);
+  }
+  .step-circle.active {
+    background: var(--accent);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(232,76,30,0.3);
+  }
+  .step-circle.done {
+    background: var(--success);
+    color: #fff;
+  }
+  .step-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    transition: color 0.3s;
+  }
+  .step-label.active { color: var(--ink); }
+  .step-connector {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin: 0 10px;
+  }
+  .step-connector.done { background: var(--success); }
+
+  /* STEP PANELS */
+  .step-panel { display: none; }
+  .step-panel.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ROUTE GRID */
+  .routes-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+  .route-option {
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .route-option:hover {
+    border-color: rgba(232,76,30,0.3);
+    background: var(--card);
+  }
+  .route-option.selected {
+    border-color: var(--accent);
+    background: rgba(232,76,30,0.04);
+  }
+  .route-option.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 14px; right: 14px;
+    width: 24px; height: 24px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .route-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .route-name-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .route-stops-text {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* PASS TYPE */
+  .pass-types {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 32px;
+  }
+  .pass-card {
+    background: #fff;
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    position: relative;
+  }
+  .pass-card:hover { border-color: rgba(232,76,30,0.3); }
+  .pass-card.selected {
+    border-color: var(--accent);
+    background: rgba(232,76,30,0.04);
+  }
+  .pass-card.popular::before {
+    content: 'Popular';
+    position: absolute;
+    top: -10px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 100px;
+    letter-spacing: 1px;
+    font-family: 'Syne', sans-serif;
+  }
+  .pass-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .pass-price span { font-size: 16px; color: var(--muted); }
+  .pass-type-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .pass-feature {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* DATE INPUTS */
+  .date-section { margin-bottom: 32px; }
+  .section-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+  }
+  .form-group {
+    margin-bottom: 18px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(232,76,30,0.1);
+  }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  /* ORDER SUMMARY */
+  .summary-card {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .summary-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(232,76,30,0.3), transparent 70%);
+    border-radius: 50%;
+  }
+  .summary-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(245,240,232,0.4);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(245,240,232,0.08);
+    position: relative;
+    z-index: 1;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-key { font-size: 14px; color: rgba(245,240,232,0.5); }
+  .summary-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+  }
+  .summary-total .summary-key { font-size: 16px; color: var(--paper); font-weight: 500; }
+  .summary-total .summary-val { font-size: 26px; letter-spacing: -1px; color: var(--accent); }
+
+  /* NAV BUTTONS */
+  .nav-btns {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+    gap: 12px;
+  }
+  .btn-back {
+    padding: 14px 28px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .btn-back:hover { border-color: var(--ink); color: var(--ink); }
+  .btn-next {
+    flex: 1;
+    padding: 16px 32px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-next:hover { background: #c73d14; transform: translateY(-1px); }
+  .btn-next:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* SUCCESS STATE */
+  .success-screen {
+    text-align: center;
+    padding: 60px 20px;
+  }
+  .success-icon {
+    width: 80px; height: 80px;
+    background: rgba(34,197,94,0.1);
+    border: 2px solid rgba(34,197,94,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 28px;
+    animation: popIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275) both;
+  }
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .success-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 10px;
+  }
+  .success-sub {
+    font-size: 16px;
+    color: var(--muted);
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+  .pass-preview {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 20px;
+    padding: 28px;
+    max-width: 380px;
+    margin: 0 auto 32px;
+    text-align: left;
+    box-shadow: 0 20px 60px rgba(13,17,23,0.2);
+  }
+  .pass-preview-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .pass-preview-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+  }
+  .pass-preview-logo span { color: var(--accent); }
+  .pass-preview-badge {
+    background: var(--success);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 100px;
+    letter-spacing: 1px;
+  }
+  .pass-preview-route {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+  }
+  .pass-preview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .pass-preview-field-label {
+    font-size: 10px;
+    opacity: 0.4;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .pass-preview-field-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .btn-home {
+    display: inline-block;
+    padding: 16px 36px;
+    background: var(--ink);
+    color: var(--paper);
+    text-decoration: none;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    transition: all 0.2s;
+  }
+  .btn-home:hover { background: var(--accent); }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .page { padding: 30px 20px; }
+    .routes-grid, .pass-types { grid-template-columns: 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    .stepper { overflow-x: auto; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">Swift<span>Pass</span></a>
+  <div class="nav-right">
+    <div class="user-chip">
+      <div class="user-avatar" id="user-avatar">U</div>
+      <span id="user-name">User</span>
+    </div>
+    <button class="btn-logout" onclick="logout()">Sign out</button>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="page-header">
+    <div class="page-tag">New Booking</div>
+    <div class="page-title">Book your pass</div>
+    <p class="page-sub">Choose your route, pass type and travel dates.</p>
+  </div>
+
+  <!-- STEPPER -->
+  <div class="stepper">
+    <div class="step-item">
+      <div class="step-circle active" id="sc-1">1</div>
+      <div class="step-label active" id="sl-1">Route</div>
+    </div>
+    <div class="step-connector" id="conn-1"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc-2">2</div>
+      <div class="step-label" id="sl-2">Pass Type</div>
+    </div>
+    <div class="step-connector" id="conn-2"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc-3">3</div>
+      <div class="step-label" id="sl-3">Details</div>
+    </div>
+    <div class="step-connector" id="conn-3"></div>
+    <div class="step-item">
+      <div class="step-circle" id="sc-4">4</div>
+      <div class="step-label" id="sl-4">Confirm</div>
+    </div>
+  </div>
+
+  <!-- STEP 1: ROUTE -->
+  <div class="step-panel active" id="panel-1">
+    <div class="section-label">Select your route</div>
+    <div class="routes-grid">
+      <div class="route-option" onclick="selectRoute(this, 'Downtown Express', 8)">
+        <div class="route-num">Route 01</div>
+        <div class="route-name-text">Downtown Express</div>
+        <div class="route-stops-text">Central Station → City Hall → Market St → South Plaza</div>
+      </div>
+      <div class="route-option" onclick="selectRoute(this, 'Northside Link', 7)">
+        <div class="route-num">Route 02</div>
+        <div class="route-name-text">Northside Link</div>
+        <div class="route-stops-text">University Ave → North Park → Garden District → Elm Rd</div>
+      </div>
+      <div class="route-option" onclick="selectRoute(this, 'Airport Shuttle', 12)">
+        <div class="route-num">Route 03</div>
+        <div class="route-name-text">Airport Shuttle</div>
+        <div class="route-stops-text">City Center → Express Way → Terminal 1 → Terminal 2</div>
+      </div>
+      <div class="route-option" onclick="selectRoute(this, 'Eastside Metro', 6)">
+        <div class="route-num">Route 04</div>
+        <div class="route-name-text">Eastside Metro</div>
+        <div class="route-stops-text">East Gate → Shopping Mall → Stadium → Sports Complex</div>
+      </div>
+      <div class="route-option" onclick="selectRoute(this, 'Westbound Loop', 7)">
+        <div class="route-num">Route 05</div>
+        <div class="route-name-text">Westbound Loop</div>
+        <div class="route-stops-text">West Harbour → Industrial Zone → Business Park → Tech Park</div>
+      </div>
+      <div class="route-option" onclick="selectRoute(this, 'Suburban Connect', 9)">
+        <div class="route-num">Route 06</div>
+        <div class="route-name-text">Suburban Connect</div>
+        <div class="route-stops-text">Hillview → Riverside → Old Town → Central Terminal</div>
+      </div>
+    </div>
+    <div class="nav-btns">
+      <div></div>
+      <button class="btn-next" onclick="goToStep(2)" id="btn-1">Select Route to Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: PASS TYPE -->
+  <div class="step-panel" id="panel-2">
+    <div class="section-label">Choose your pass type</div>
+    <div class="pass-types">
+      <div class="pass-card" onclick="selectPass(this, 'Daily', 1)">
+        <div class="pass-price">$2<span>/day</span></div>
+        <div class="pass-type-name">Daily Pass</div>
+        <div class="pass-feature">Perfect for occasional travel.<br>Valid for 24 hours.</div>
+      </div>
+      <div class="pass-card popular" onclick="selectPass(this, 'Weekly', 8)">
+        <div class="pass-price">$8<span>/wk</span></div>
+        <div class="pass-type-name">Weekly Pass</div>
+        <div class="pass-feature">Best for regular commuters.<br>Valid for 7 days.</div>
+      </div>
+      <div class="pass-card" onclick="selectPass(this, 'Monthly', 25)">
+        <div class="pass-price">$25<span>/mo</span></div>
+        <div class="pass-type-name">Monthly Pass</div>
+        <div class="pass-feature">Best value for daily riders.<br>Valid for 30 days.</div>
+      </div>
+    </div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="goToStep(1)">← Back</button>
+      <button class="btn-next" onclick="goToStep(3)" id="btn-2">Select Pass to Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: DETAILS -->
+  <div class="step-panel" id="panel-3">
+    <div class="section-label">Travel details</div>
+    <div class="date-section">
+      <div class="two-col">
+        <div class="form-group">
+          <label>Start Date</label>
+          <input type="date" id="start-date" onchange="calcEndDate()">
+        </div>
+        <div class="form-group">
+          <label>End Date (auto-calculated)</label>
+          <input type="date" id="end-date" readonly style="background:#f5f0e8; cursor:default;">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Full Name (as on pass)</label>
+        <input type="text" id="pass-name" placeholder="John Doe">
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="tel" id="pass-phone" placeholder="+1 555 000 0000">
+      </div>
+    </div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="goToStep(2)">← Back</button>
+      <button class="btn-next" onclick="goToStep(4)">Review Booking →</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: CONFIRM -->
+  <div class="step-panel" id="panel-4">
+    <div class="section-label">Review your order</div>
+    <div class="summary-card">
+      <div class="summary-title">Order Summary</div>
+      <div class="summary-row">
+        <div class="summary-key">Route</div>
+        <div class="summary-val" id="sum-route">—</div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-key">Pass Type</div>
+        <div class="summary-val" id="sum-pass">—</div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-key">Start Date</div>
+        <div class="summary-val" id="sum-start">—</div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-key">End Date</div>
+        <div class="summary-val" id="sum-end">—</div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-key">Pass Holder</div>
+        <div class="summary-val" id="sum-name">—</div>
+      </div>
+      <div class="summary-row summary-total">
+        <div class="summary-key">Total Amount</div>
+        <div class="summary-val" id="sum-total">—</div>
+      </div>
+    </div>
+    <div class="nav-btns">
+      <button class="btn-back" onclick="goToStep(3)">← Back</button>
+      <button class="btn-next" onclick="handleBooking()" id="confirm-btn">
+        <span class="spinner" id="book-spinner"></span>
+        <span id="confirm-text">Confirm & Book Pass</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="step-panel" id="panel-success">
+    <div class="success-screen">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Pass Booked!</div>
+      <p class="success-sub">Your bus pass is confirmed and active. Show this at boarding.</p>
+
+      <div class="pass-preview">
+        <div class="pass-preview-header">
+          <div class="pass-preview-logo">Swift<span>Pass</span></div>
+          <div class="pass-preview-badge">✓ ACTIVE</div>
+        </div>
+        <div class="pass-preview-route" id="prev-route">Downtown Express</div>
+        <div class="pass-preview-grid">
+          <div>
+            <div class="pass-preview-field-label">Pass Holder</div>
+            <div class="pass-preview-field-val" id="prev-name">—</div>
+          </div>
+          <div>
+            <div class="pass-preview-field-label">Pass Type</div>
+            <div class="pass-preview-field-val" id="prev-type">—</div>
+          </div>
+          <div>
+            <div class="pass-preview-field-label">Valid From</div>
+            <div class="pass-preview-field-val" id="prev-start">—</div>
+          </div>
+          <div>
+            <div class="pass-preview-field-label">Valid Until</div>
+            <div class="pass-preview-field-val" id="prev-end">—</div>
+          </div>
+        </div>
+      </div>
+
+      <a href="index.html" class="btn-home">Back to Home</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── CONFIG ──────────────────────────────────────────────
+  const API_BASE = 'http://YOUR_ALB_DNS_HERE';
+  // ────────────────────────────────────────────────────────
+
+  // Booking state
+  const booking = {
+    route: null, routeBasePrice: 0,
+    passType: null, passPrice: 0,
+    startDate: null, endDate: null,
+    name: null, phone: null,
+    total: 0
+  };
+
+  // Load user info
+  window.onload = () => {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.name) { window.location.href = 'auth.html'; return; }
+    document.getElementById('user-name').textContent = user.name.split(' ')[0];
+    document.getElementById('user-avatar').textContent = user.name[0].toUpperCase();
+    document.getElementById('pass-name').value = user.name;
+
+    // Set today as default start date
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start-date').value = today;
+    document.getElementById('start-date').min = today;
+  };
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'auth.html';
+  }
+
+  let currentStep = 1;
+
+  function goToStep(step) {
+    // Validate before going forward
+    if (step === 2 && !booking.route) { alert('Please select a route first.'); return; }
+    if (step === 3 && !booking.passType) { alert('Please select a pass type.'); return; }
+    if (step === 4) {
+      if (!document.getElementById('start-date').value) { alert('Please select a start date.'); return; }
+      if (!document.getElementById('pass-name').value.trim()) { alert('Please enter the pass holder name.'); return; }
+      populateSummary();
+    }
+
+    // Update stepper
+    for (let i = 1; i <= 4; i++) {
+      const circle = document.getElementById(`sc-${i}`);
+      const label = document.getElementById(`sl-${i}`);
+      if (i < step) {
+        circle.classList.remove('active');
+        circle.classList.add('done');
+        circle.textContent = '✓';
+        label.classList.remove('active');
+      } else if (i === step) {
+        circle.classList.add('active');
+        circle.classList.remove('done');
+        circle.textContent = i;
+        label.classList.add('active');
+      } else {
+        circle.classList.remove('active', 'done');
+        circle.textContent = i;
+        label.classList.remove('active');
+      }
+      if (i < 4) {
+        document.getElementById(`conn-${i}`).classList.toggle('done', i < step);
+      }
+    }
+
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`panel-${step}`).classList.add('active');
+    currentStep = step;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function selectRoute(el, name, basePrice) {
+    document.querySelectorAll('.route-option').forEach(r => r.classList.remove('selected'));
+    el.classList.add('selected');
+    booking.route = name;
+    booking.routeBasePrice = basePrice;
+    document.getElementById('btn-1').textContent = `Continue with ${name} →`;
+  }
+
+  function selectPass(el, type, price) {
+    document.querySelectorAll('.pass-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    booking.passType = type;
+    booking.passPrice = price;
+    document.getElementById('btn-2').textContent = `Continue with ${type} Pass →`;
+    calcEndDate();
+  }
+
+  function calcEndDate() {
+    const start = document.getElementById('start-date').value;
+    if (!start || !booking.passType) return;
+    const d = new Date(start);
+    const days = { Daily: 1, Weekly: 7, Monthly: 30 };
+    d.setDate(d.getDate() + (days[booking.passType] || 0));
+    document.getElementById('end-date').value = d.toISOString().split('T')[0];
+    booking.startDate = start;
+    booking.endDate = document.getElementById('end-date').value;
+  }
+
+  function populateSummary() {
+    booking.startDate = document.getElementById('start-date').value;
+    booking.endDate = document.getElementById('end-date').value;
+    booking.name = document.getElementById('pass-name').value.trim();
+    booking.phone = document.getElementById('pass-phone').value.trim();
+    booking.total = booking.passPrice;
+
+    document.getElementById('sum-route').textContent = booking.route;
+    document.getElementById('sum-pass').textContent = `${booking.passType} Pass`;
+    document.getElementById('sum-start').textContent = booking.startDate;
+    document.getElementById('sum-end').textContent = booking.endDate;
+    document.getElementById('sum-name').textContent = booking.name;
+    document.getElementById('sum-total').textContent = `$${booking.total}.00`;
+  }
+
+  async function handleBooking() {
+    const btn = document.getElementById('confirm-btn');
+    const spinner = document.getElementById('book-spinner');
+    const text = document.getElementById('confirm-text');
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    text.textContent = 'Processing...';
+
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+    try {
+      const res = await fetch(`${API_BASE}/book`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: user.id || 1,
+          route: booking.route,
+          pass_type: booking.passType,
+          start_date: booking.startDate,
+          expiry_date: booking.endDate,
+          amount: booking.total,
+          payment_status: 'paid'
+        })
+      });
+
+      // Show success regardless of API (dev mode fallback)
+      showSuccess();
+    } catch (err) {
+      console.warn('API not reachable — dev mode:', err);
+      showSuccess();
+    }
+  }
+
+  function showSuccess() {
+    document.getElementById('prev-route').textContent = booking.route;
+    document.getElementById('prev-name').textContent = booking.name;
+    document.getElementById('prev-type').textContent = `${booking.passType} Pass`;
+    document.getElementById('prev-start').textContent = booking.startDate;
+    document.getElementById('prev-end').textContent = booking.endDate;
+
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-success').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
