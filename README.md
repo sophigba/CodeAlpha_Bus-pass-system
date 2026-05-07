@@ -1,9 +1,6 @@
-# Cloud-Based Bus Pass System — AWS Infrastructure
+# Cloud-Based Bus Pass System 
 
-> **CodeAlpha Cloud Computing Internship — Task 3 & Task 2**
-> Phase 1: Infrastructure Provisioning | Phase 2: Security Hardening *(coming)*
-
----
+> **CodeAlpha Cloud Computing Internship
 
 ## Live URLs
 
