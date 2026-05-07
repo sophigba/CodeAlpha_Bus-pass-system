@@ -67,7 +67,7 @@ Bus-Pass-System/
 │   └── book.html                    # Book a Pass (4-step booking flow)
 └── docs/
     ├── Architectural Diagram.jpg    # Full AWS architecture diagram
-    └── screenshots/                 # Deployment screenshots
+    └── /                 # Deployment 
 ```
 
 ---
@@ -208,14 +208,14 @@ curl -X POST http://your-alb-dns/register \
 
 | Step | Screenshot |
 |---|---|
-| VPC and subnets created | [docs/screenshots/vpc.jpg](docs/screenshots/) |
-| RDS instance available | [docs/screenshots/rds.jpg](docs/screenshots/) |
-| EC2 Auto Scaling Group healthy | [docs/screenshots/asg.jpg](docs/screenshots/) |
-| ALB active with healthy targets | [docs/screenshots/alb.jpg](docs/screenshots/) |
-| CloudFront distribution deployed | [docs/screenshots/cloudfront.jpg](docs/screenshots/) |
-| Flask health check via ALB | [docs/screenshots/health-check.jpg](docs/screenshots/) |
-| Full booking flow in browser | [docs/screenshots/booking-1.jpg](docs/screenshots/) |
-| RDS showing inserted data | [docs/screenshots/rds-data.jpg](docs/screenshots/) |
+| VPC and subnets created | [docs/vpc.jpg](docs/) |
+| RDS instance available | [docs/rds.jpg](docs/) |
+| EC2 Auto Scaling Group healthy | [docs/asg.jpg](docs/) |
+| ALB active with healthy targets | [docs/alb.jpg](docs/) |
+| CloudFront distribution deployed | [docs/cloudfront.jpg](docs/) |
+| Flask health check via ALB | [docs/health-check.jpg](docs/) |
+| Full booking flow in browser | [docs/booking-1.jpg](docs/) |
+| RDS showing inserted data | [docs/rds-data.jpg](docs/) |
 
 ---
 
