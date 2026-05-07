@@ -208,14 +208,14 @@ curl -X POST http://your-alb-dns/register \
 
 | Step | Screenshot |
 |---|---|
-| VPC and subnets created | [docs/vpc.jpg](docs/) |
-| RDS instance available | [docs/rds.jpg](docs/) |
-| EC2 Auto Scaling Group healthy | [docs/asg.jpg](docs/) |
-| ALB active with healthy targets | [docs/alb.jpg](docs/) |
-| CloudFront distribution deployed | [docs/cloudfront.jpg](docs/) |
-| Flask health check via ALB | [docs/health-check.jpg](docs/) |
-| Full booking flow in browser | [docs/booking-1.jpg](docs/) |
-| RDS showing inserted data | [docs/rds-data.jpg](docs/) |
+| VPC and subnets created | [docs/vpc.jpg](docs/vpc.jpg) |
+| RDS instance available | [docs/rds.jpg](docs/rds.jpg) |
+| EC2 Auto Scaling Group healthy | [docs/asg.jpg](docs/asg.jpg) |
+| ALB active with healthy targets | [docs/alb.jpg](docs/alb.jpg) |
+| CloudFront distribution deployed | [docs/cloudfront.jpg](docs/cloudfront.jpg) |
+| Flask health check via ALB | [docs/health-check.jpg](docs/health-check.jpg) |
+| Full booking flow in browser | [docs/booking-1.jpg](docs/booking-1.jpg) |
+| RDS showing inserted data | [docs/rds-data.jpg](docs/rds-data.jpg) |
 
 ---
 
