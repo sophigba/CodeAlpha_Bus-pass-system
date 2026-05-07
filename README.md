@@ -1,6 +1,6 @@
 # Cloud-Based Bus Pass System 
 
-> **CodeAlpha Cloud Computing Internship
+**CodeAlpha Cloud Computing Internship**
 
 ## Live URLs
 
