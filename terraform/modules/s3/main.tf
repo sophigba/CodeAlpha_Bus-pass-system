@@ -1,6 +1,6 @@
 
 resource "aws_s3_bucket" "frontend" {
-  bucket = "buspass-frontend-yourname"
+  bucket = "buspass-frontend-sophia"
   tags   = { Name = "BusPass-Frontend" }
 }
 
