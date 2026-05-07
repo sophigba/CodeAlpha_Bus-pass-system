@@ -208,15 +208,14 @@ curl -X POST http://your-alb-dns/register \
 
 | Step | Screenshot |
 |---|---|
-| VPC and subnets created | [docs/screenshots/vpc.png](docs/screenshots/) |
-| RDS instance available | [docs/screenshots/rds.png](docs/screenshots/) |
-| EC2 Auto Scaling Group healthy | [docs/screenshots/asg.png](docs/screenshots/) |
-| ALB active with healthy targets | [docs/screenshots/alb.png](docs/screenshots/) |
-| S3 bucket with frontend files | [docs/screenshots/s3.png](docs/screenshots/) |
-| CloudFront distribution deployed | [docs/screenshots/cloudfront.png](docs/screenshots/) |
-| Flask health check via ALB | [docs/screenshots/health_check.png](docs/screenshots/) |
-| Full booking flow in browser | [docs/screenshots/booking_flow.png](docs/screenshots/) |
-| RDS showing inserted data | [docs/screenshots/rds_data.png](docs/screenshots/) |
+| VPC and subnets created | [docs/screenshots/vpc.jpg](docs/screenshots/) |
+| RDS instance available | [docs/screenshots/rds.jpg](docs/screenshots/) |
+| EC2 Auto Scaling Group healthy | [docs/screenshots/asg.jpg](docs/screenshots/) |
+| ALB active with healthy targets | [docs/screenshots/alb.jpg](docs/screenshots/) |
+| CloudFront distribution deployed | [docs/screenshots/cloudfront.jpg](docs/screenshots/) |
+| Flask health check via ALB | [docs/screenshots/health-check.jpg](docs/screenshots/) |
+| Full booking flow in browser | [docs/screenshots/booking-1.jpg](docs/screenshots/) |
+| RDS showing inserted data | [docs/screenshots/rds-data.jpg](docs/screenshots/) |
 
 ---
 
