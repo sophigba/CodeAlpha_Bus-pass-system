@@ -67,7 +67,7 @@ Bus-Pass-System/
 │   └── book.html                    # Book a Pass (4-step booking flow)
 └── docs/
     ├── Architectural Diagram.jpg    # Full AWS architecture diagram
-    └── /                 # Deployment 
+    └── /                            # Deployment 
 ```
 
 ---
