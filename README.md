@@ -1,6 +1,6 @@
 # Cloud-Based Bus Pass Booking System 
 
-**CodeAlpha Cloud Computing Internship**
+**A fully functional online bus pass booking platform where users can register, select a city route, choose a pass type and complete a booking, all served from the cloud.**
 
 ## Live URLs
 
