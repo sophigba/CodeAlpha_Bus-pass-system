@@ -2,13 +2,9 @@
 
 **A fully functional online bus pass booking platform where users can register, select a city route, choose a pass type and complete a booking, all served from the cloud.**
 
-## Live URLs
+## Live Demo
 
-| Resource | URL |
-|---|---|
-| Booking | https://d3subdvdad9cu1.cloudfront.net |
-| API Health Check | http://buspass-alb-1884523472.us-east-1.elb.amazonaws.com/health |
-
+[![Demo Video](https://img.shields.io/badge/Watch-Demo-red)](https://onedrive.live.com/?qt=allmyphotos&photosData=%2Fshare%2F3169724B9B4E50FC%21s69f6dcd05ead42bf80d63dd8f489dfc7%3Fithint%3Dvideo%26e%3DgKcWtc%26migratedtospo%3Dtrue&cid=3169724B9B4E50FC&id=3169724B9B4E50FC%21s69f6dcd05ead42bf80d63dd8f489dfc7&redeem=aHR0cHM6Ly8xZHJ2Lm1zL3YvYy8zMTY5NzI0YjliNGU1MGZjL0lRRFEzUFpwclY2X1FvRFdQZGowaWRfSEFad2FtM2U1bkYtMFMtczdRaVJMRmwwP2U9Z0tjV3Rj&v=photos)
 ---
 
 ## Architecture Overview
@@ -216,7 +212,6 @@ curl -X POST http://your-alb-dns/register \
 | Flask health check via ALB | [docs/health-check.jpg](docs/health-check.jpg) |
 | Full booking flow in browser | [docs/booking-1.jpg](docs/booking-1.jpg) |
 | RDS showing inserted data | [docs/rds-data.jpg](docs/rds-data-1.jpg) |
-| Live Demo - full booking flow | [![Demo Video](https://img.shields.io/badge/Watch-Demo-red)](https://onedrive.live.com/?qt=allmyphotos&photosData=%2Fshare%2F3169724B9B4E50FC%21s69f6dcd05ead42bf80d63dd8f489dfc7%3Fithint%3Dvideo%26e%3DgKcWtc%26migratedtospo%3Dtrue&cid=3169724B9B4E50FC&id=3169724B9B4E50FC%21s69f6dcd05ead42bf80d63dd8f489dfc7&redeem=aHR0cHM6Ly8xZHJ2Lm1zL3YvYy8zMTY5NzI0YjliNGU1MGZjL0lRRFEzUFpwclY2X1FvRFdQZGowaWRfSEFad2FtM2U1bkYtMFMtczdRaVJMRmwwP2U9Z0tjV3Rj&v=photos)
 
 ---
 
